@@ -238,7 +238,85 @@ find_package(PNG)
 set(ZLIB_ROOT ${ZLIB_PREFIX})
 find_package(ZLIB)
 
-INCLUDE(cmake/WtFindBoost.txt)
+if(NOT LUC_TEST)
+  INCLUDE(cmake/WtFindBoost.txt)
+else()
+  find_package(Boost REQUIRED)
+
+  SET(Boost_COMPONENTS
+      program_options
+      filesystem
+      thread
+  )
+
+  FOREACH(_target ${Boost_COMPONENTS})
+    IF(TARGET Boost::${_target})
+      STRING(TOUPPER ${_target} _TARGET)
+      SET(Boost_${_TARGET}_LIBRARY Boost::${_target})
+    ENDIF(TARGET Boost::${_target})
+  ENDFOREACH(_target ${Boost_COMPONENTS})
+  UNSET(_target)
+  UNSET(_TARGET)
+
+  IF (Boost_FOUND)
+  IF(Boost_VERSION_MAJOR AND NOT Boost_MAJOR_VERSION)
+    set(Boost_MAJOR_VERSION ${Boost_VERSION_MAJOR})
+  ENDIF()
+  IF(Boost_VERSION_MINOR AND NOT Boost_MINOR_VERSION)
+    set(Boost_MINOR_VERSION ${Boost_VERSION_MINOR})
+  ENDIF()
+
+  # Translate variables from official cmake names to internally used names
+
+  message("je recherche  Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}")
+  message("je recherche  Boost_LIBRARY_DIRS ${Boost_LIBRARY_DIRS}")
+  message("je recherche  Boost_FILESYSTEM_LIBRARY ${Boost_FILESYSTEM_LIBRARY}")
+  message("je recherche  Boost_PROGRAM_OPTIONS_LIBRARY ${Boost_PROGRAM_OPTIONS_LIBRARY}")
+  message("je recherche  Boost_SYSTEM_LIBRARY ${Boost_SYSTEM_LIBRARY}")
+  message("je recherche  Boost_THREAD_LIBRARY ${Boost_THREAD_LIBRARY}")
+
+  SET(BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
+  SET(BOOST_LIB_DIRS ${Boost_LIBRARY_DIRS})
+  SET(BOOST_FS_LIB ${Boost_FILESYSTEM_LIBRARY})
+  SET(BOOST_PO_LIB ${Boost_PROGRAM_OPTIONS_LIBRARY})
+  SET(BOOST_SYSTEM_LIB ${Boost_SYSTEM_LIBRARY})
+  SET(BOOST_THREAD_LIB ${Boost_THREAD_LIBRARY})
+  IF(WIN32 AND BOOST_DYNAMIC AND BUILD_TESTS)
+    SET(BOOST_UT_LIB ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  ELSE()
+    SET(BOOST_UT_LIB "")
+  ENDIF()
+
+  SET(BOOST_WT_MT_FOUND TRUE)
+  SET(BOOST_WT_FOUND TRUE)
+  SET(BOOST_WTHTTP_MT_FOUND TRUE)
+  SET(BOOST_WTHTTP_FOUND TRUE)
+
+  IF(MSVC AND Boost_MAJOR_VERSION EQUAL 1 AND Boost_MINOR_VERSION LESS 70)
+    # use autolink
+    SET(BOOST_WT_LIBRARIES "")
+    SET(BOOST_WTHTTP_LIBRARIES "")
+    SET(BOOST_TEST_LIBRARIES "")
+  ELSE()
+    SET(BOOST_WT_LIBRARIES
+        ${Boost_THREAD_LIBRARY}
+        ${Boost_SYSTEM_LIBRARY}
+        ${Boost_FILESYSTEM_LIBRARY})
+    SET(BOOST_WTHTTP_LIBRARIES
+        ${Boost_THREAD_LIBRARY}
+        ${Boost_PROGRAM_OPTIONS_LIBRARY}
+        ${Boost_SYSTEM_LIBRARY}
+        ${Boost_FILESYSTEM_LIBRARY})
+    SET(BOOST_TEST_LIBRARIES ${BOOST_UT_LIB})
+  ENDIF()
+
+  IF(TARGET Boost::headers)
+    SET(BOOST_WT_LIBRARIES ${BOOST_WT_LIBRARIES} Boost::headers)
+    SET(BOOST_WTHTTP_LIBRARIES ${BOOST_WTHTTP_LIBRARIES} Boost::headers)
+  ENDIF()
+ENDIF (Boost_FOUND)
+
+endif()
 INCLUDE(cmake/WtFindFcgi.txt)
 INCLUDE(cmake/WtFindMysql.txt)
 INCLUDE(cmake/WtFindPostgresql.txt)

@@ -92,15 +92,12 @@ message("valeur de ${LUC_TEST}")
 message("valeur de ${TEST_VALUE}")
 
 
-if(NOT LUC_TEST)
 FIND_PACKAGE(Boost 1.50
   COMPONENTS
     ${Boost_COMPONENTS}
   REQUIRED
 )
-else()
-  find_package(Boost REQUIRED)
-endif()
+
 
 # Use IMPORTED targets if defined
 FOREACH(_target ${Boost_COMPONENTS})
