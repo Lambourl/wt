@@ -238,6 +238,8 @@ find_package(PNG)
 set(ZLIB_ROOT ${ZLIB_PREFIX})
 find_package(ZLIB)
 
+
+message("luc recherche LUC_TEST ${LUC_TEST}")
 if(NOT LUC_TEST)
   INCLUDE(cmake/WtFindBoost.txt)
 else()
