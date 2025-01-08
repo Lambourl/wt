@@ -88,6 +88,10 @@ endif()
 set(_BOOST_FOUND)
 set(_BOOST_MAJOR_VERSION)
 set(_BOOST_MINOR_VERSION)
+message(valeur de ${LUC_TEST})
+message(valeur de ${TEST_VALUE})
+
+
 if(NOT LUC_TEST)
 FIND_PACKAGE(Boost 1.50
   COMPONENTS
