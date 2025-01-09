@@ -39,6 +39,7 @@ using namespace Wt::Render;
 #include <boost/phoenix.hpp>
 #endif
 #include <boost/spirit/include/classic_file_iterator.hpp>
+#include <boost/foreach.hpp>
 
 #include <map>
 
